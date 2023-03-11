@@ -2,6 +2,7 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -23,6 +24,7 @@ export class PostEntity {
   created_at!: Date;
 
   @ManyToOne(() => UserEntity, (user) => user.posts)
+  @JoinColumn({ name: "user_id" })
   user!: UserEntity;
 
   @OneToMany(() => PostInfoEntity, (postInfo) => postInfo.post)

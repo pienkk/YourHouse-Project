@@ -1,9 +1,11 @@
 import { dataSource } from "../config/typeormConfig";
 import { UserEntity } from "../entities/UserEntity";
+import { PostEntity } from "../entities/PostEntity";
+import { QueryDeepPartialEntity } from "typeorm/query-builder/QueryPartialEntity";
 
 export async function typeormSeed() {
   // 유저 seed
-  await dataSource.getRepository(UserEntity).insert([
+  const userSeedArray: QueryDeepPartialEntity<UserEntity>[] = [
     {
       social_id: 123456,
       email: "kisuk333@gmail.com",
@@ -22,5 +24,12 @@ export async function typeormSeed() {
       profile_image: "http://naver.com",
       nickname: "기석2",
     },
-  ]);
+  ];
+  await dataSource.getRepository(UserEntity).insert(userSeedArray);
+
+  const postSeedArray: QueryDeepPartialEntity<PostEntity>[] = [
+    { user: userSeedArray[0] },
+    { user: userSeedArray[1] },
+  ];
+  await dataSource.getRepository(PostEntity).insert(postSeedArray);
 }

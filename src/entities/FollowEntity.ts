@@ -1,7 +1,15 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  Index,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { UserEntity } from "./UserEntity";
 
 @Entity("follows")
+@Index(["followId", "followedId"], { unique: true })
 export class FollowEntity {
   @PrimaryGeneratedColumn({ comment: "팔로우 인덱스" })
   id!: number;
@@ -17,8 +25,10 @@ export class FollowEntity {
   followedId!: number;
 
   @ManyToOne(() => UserEntity, (user) => user.follows)
+  @JoinColumn({ name: "follow_id" })
   followUser!: UserEntity;
 
   @ManyToOne(() => UserEntity, (user) => user.followers)
+  @JoinColumn({ name: "followed_id" })
   followerUser!: UserEntity;
 }

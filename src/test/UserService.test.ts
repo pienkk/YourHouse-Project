@@ -19,12 +19,6 @@ describe("UserService 유저 비즈니스 로직", () => {
   });
 
   describe("signIn() 소셜 로그인", () => {
-    const KakaoAccessToken: ResponseKaKaoToken = {
-      access_token: "accesstoken",
-      token_type: "access_token",
-      refresh_token: "RefreshTopken",
-      scope: "profile_image, nickname",
-    };
     const KakaoUserInfo: KakaoInfo = {
       id: 1234567,
       kakao_account: {
@@ -46,12 +40,10 @@ describe("UserService 유저 비즈니스 로직", () => {
 
     // 성공
     it("소셜 로그인 성공 시 jwt 토큰, nickname, profileImage를 반환한다.", async () => {
-      const axiosPostSpy = jest
-        .spyOn(axios, "post")
-        .mockResolvedValue({ data: KakaoAccessToken });
-      const axiosGetSpy = jest
-        .spyOn(axios, "get")
-        .mockResolvedValue({ data: KakaoUserInfo });
+      AuthService.prototype.getKakaoUserInfo = jest.fn();
+      const authServiceGetKakaoUserInfoSpy = jest
+        .spyOn(authService, "getKakaoUserInfo")
+        .mockResolvedValue(KakaoUserInfo);
       UserRepository.prototype.findOne = jest.fn();
       const userRepositoryFindOneSpy = jest
         .spyOn(userRepository, "findOne")
@@ -67,6 +59,7 @@ describe("UserService 유저 비즈니스 로직", () => {
 
       const result = await userService.signIn({ code: "accesscode" });
 
+      expect(authServiceGetKakaoUserInfoSpy).toHaveBeenCalledWith("accesscode");
       expect(result).toEqual({
         accessToken: "eyasd",
         nickname: "기석",
@@ -74,4 +67,6 @@ describe("UserService 유저 비즈니스 로직", () => {
       });
     });
   });
+
+  // describe("createFollow() 유저 팔로우", () => {});
 });

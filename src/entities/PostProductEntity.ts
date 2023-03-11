@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { PostInfoEntity } from "./PostInfoEntity";
 import { ProductEntity } from "./ProductEntity";
 
@@ -20,8 +20,10 @@ export class PostProductEntity {
   productId!: number;
 
   @ManyToOne(() => PostInfoEntity, (postInfo) => postInfo.products)
+  @JoinColumn({ name: "post_info_id" })
   postInfo!: PostInfoEntity;
 
   @ManyToOne(() => ProductEntity, (product) => product.posts)
+  @JoinColumn({ name: "product_id" })
   product!: ProductEntity;
 }

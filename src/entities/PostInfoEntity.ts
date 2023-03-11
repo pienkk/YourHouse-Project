@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -40,18 +41,23 @@ export class PostInfoEntity {
   spaceId!: number;
 
   @ManyToOne(() => PostEntity, (post) => post.postInfo)
+  @JoinColumn({ name: "post_id" })
   post!: PostEntity;
 
   @ManyToOne(() => RoomSizeEntity, (room) => room.postInfo)
+  @JoinColumn({ name: "room_size_id" })
   roomSize!: RoomSizeEntity;
 
   @ManyToOne(() => ResidenceEntity, (residence) => residence.postInfo)
+  @JoinColumn({ name: "residence_id" })
   residence!: ResidenceEntity;
 
   @ManyToOne(() => StyleEntity, (style) => style.postInfo)
+  @JoinColumn({ name: "style_id" })
   style!: StyleEntity;
 
   @ManyToOne(() => SpaceEntity, (space) => space.postInfo)
+  @JoinColumn({ name: "space_id" })
   space!: SpaceEntity;
 
   @OneToMany(() => PostProductEntity, (products) => products.postInfo)
