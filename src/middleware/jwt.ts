@@ -11,14 +11,13 @@ const verifyJwt = async (req: Request, res: Response, next: NextFunction) => {
   const env = Env.getInstance();
   const userRepository = new UserRepository();
 
-  const auth = req.headers.authorization;
-
-  // 헤더에 토큰이 없을 때
-  if (!auth) {
-    throw new BaseError("Dont find token", 403);
-  }
-
   try {
+    const auth = req.headers.authorization;
+    // 헤더에 토큰이 없을 때
+    if (!auth) {
+      throw new BaseError("Dont find token", 403);
+    }
+
     const verifyToken = jwt.verify(auth, env.getEnv("JWT_SECRET")) as JwtPayload;
 
     const user = await userRepository.findOne({ where: { id: verifyToken.user_id } });
@@ -30,9 +29,9 @@ const verifyJwt = async (req: Request, res: Response, next: NextFunction) => {
 
     // req.user 에 유저 정보 할당
     req.user = user;
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    throw error;
+    next(error);
   }
 
   next();

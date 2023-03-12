@@ -31,7 +31,7 @@ export class UserController {
    */
   public async createFollow(req: Request, res: Response, next: NextFunction) {
     try {
-      const user: UserEntity = req.user;
+      const user = req.user;
       const querySchema = Joi.object({
         writerId: Joi.number().required(),
       });
@@ -40,7 +40,7 @@ export class UserController {
 
       await this.userService.createFollow(user.id, query.writerId);
 
-      res.status(200).json({ message: "SUCCESS_FOLLOWING" });
+      res.status(201).json({ message: "SUCCESS_FOLLOWING" });
     } catch (error) {
       console.error(error);
       next(error);
@@ -52,7 +52,7 @@ export class UserController {
    */
   public async deleteFollow(req: Request, res: Response, next: NextFunction) {
     try {
-      const user: UserEntity = req.user;
+      const user = req.user;
       const querySchema = Joi.object({
         writerId: Joi.number().required(),
       });
@@ -61,7 +61,7 @@ export class UserController {
 
       await this.userService.deleteFollow(user.id, query.writerId);
 
-      res.status(200).json({ message: "SUCCESS_DELETE" });
+      res.status(204).json({ message: "SUCCESS_DELETE" });
     } catch (error) {
       console.error(error);
       next(error);

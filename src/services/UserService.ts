@@ -48,6 +48,8 @@ export class UserService {
    * 유저 팔로우
    */
   public async createFollow(userId: number, followId: number): Promise<FollowEntity> {
+    // 유저, 팔로우 여부 확인
+    await this.validateUser(followId);
     const followed = await this.followRepository.findOne({
       where: { followId: userId, followedId: followId },
     });
@@ -64,15 +66,30 @@ export class UserService {
    * 팔로우 삭제
    */
   public async deleteFollow(userId: number, followId: number) {
+    // 유저, 팔로우 여부 확인
+    await this.validateUser(followId);
     const followed = await this.followRepository.findOne({
       where: { followId: userId, followedId: followId },
     });
 
     // 팔로우 하지 않은 유저인 경우
     if (!followed) {
-      throw new BaseError("already followed this user", 409);
+      throw new BaseError("Don't followed this user", 409);
     }
 
     return await this.followRepository.delete(followed);
+  }
+
+  /**
+   * 유저 유효성 검사
+   */
+  private async validateUser(userId: number) {
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+
+    if (!user) {
+      throw new BaseError("User not found", 404);
+    }
+
+    return user;
   }
 }

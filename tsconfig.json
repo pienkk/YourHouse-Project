@@ -103,5 +103,5 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */
   },
   "include": ["src/**/*", "src/app.ts", "src/server.ts"],
-  "ts-node": { "compilerOptions": { "module": "CommonJS" } }
+  "ts-node": { "files": true, "compilerOptions": { "module": "CommonJS" } }
 }

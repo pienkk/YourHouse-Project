@@ -43,7 +43,12 @@ export class AuthService {
     return data;
   }
 
+  /**
+   * Jwt 생성
+   */
   public createJwt(userId: number): string {
-    return jwt.sign({ user_id: userId }, this.env.getEnv("JWT_SECRET"));
+    return jwt.sign({ user_id: userId }, this.env.getEnv("JWT_SECRET"), {
+      expiresIn: "1d",
+    });
   }
 }
