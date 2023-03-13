@@ -2,6 +2,7 @@ import {
   Column,
   Entity,
   Index,
+  JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from "typeorm";
@@ -21,8 +22,10 @@ export class LikeEntity {
   postId!: number;
 
   @ManyToOne(() => UserEntity, (user) => user.likes)
+  @JoinColumn({ name: "user_id" })
   user!: UserEntity;
 
   @ManyToOne(() => PostEntity, (post) => post.likes)
+  @JoinColumn({ name: "post_id" })
   post!: PostEntity;
 }

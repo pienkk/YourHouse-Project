@@ -1,6 +1,7 @@
 import {
   Column,
   Entity,
+  JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -26,6 +27,7 @@ export class ProductEntity {
   colorId!: number;
 
   @ManyToOne(() => ColorEntity, (color) => color.products)
+  @JoinColumn({ name: "color_id" })
   color!: ColorEntity;
 
   @OneToMany(() => PostProductEntity, (post) => post.product)

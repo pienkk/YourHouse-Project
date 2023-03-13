@@ -3,7 +3,7 @@ import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import morgan from "morgan";
 import { router } from "./routes";
-import { dataSource } from "./config/config";
+import { dataSource } from "./config/typeormConfig";
 dotenv.config();
 
 /**
@@ -13,14 +13,16 @@ const createApp = () => {
   const app = express();
 
   // TypeORM DB 연결
-  dataSource
-    .initialize()
-    .then(() => {
-      console.log("Database initialize!!");
-    })
-    .catch((err) => {
-      console.error(err);
-    });
+  if (process.env.NODE_ENV !== "test") {
+    dataSource
+      .initialize()
+      .then(() => {
+        console.log("Database initialize!!");
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
 
   app.use(cors());
   app.use(morgan("dev"));
@@ -43,9 +45,7 @@ const createApp = () => {
     if (err.errorCode) {
       res.status(err.status).json(err);
     } else {
-      res
-        .status(err.status || 500)
-        .json({ message: err.message || "ERROR_UNKNOWN" });
+      res.status(err.status || 500).json({ message: err.message || "ERROR_UNKNOWN" });
     }
   });
 

@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { PostInfoEntity } from "./PostInfoEntity";
 
 @Entity("hashtags")
@@ -13,5 +13,6 @@ export class HashTagsEntity {
   postInfoId!: number;
 
   @ManyToOne(() => PostInfoEntity, (postInfo) => postInfo.hashtags)
+  @JoinColumn({ name: "post_info_id" })
   postInfo!: PostInfoEntity;
 }
