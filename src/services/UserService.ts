@@ -5,10 +5,18 @@ import { KakaoInfo } from "../types/KakaoInfo";
 import { FollowRepository } from "../repositories/FollowRepository";
 import { BaseError } from "../util/BaseError";
 import { FollowEntity } from "../entities/FollowEntity";
+import { PostRepository } from "../repositories/PostRepository";
+import { LikeRepository } from "../repositories/LikeRepository";
+import { PostEntity } from "../entities/PostEntity";
+import { UserEntity } from "../entities/UserEntity";
+import { DeleteResult } from "typeorm";
+import { LikeEntity } from "../entities/LikeEntity";
 
 export class UserService {
   private readonly userRepository = new UserRepository();
   private readonly followRepository = new FollowRepository();
+  private readonly postRepository = new PostRepository();
+  private readonly likeRepository = new LikeRepository();
   private readonly authService = new AuthService();
 
   /**
@@ -50,12 +58,11 @@ export class UserService {
   public async createFollow(userId: number, followId: number): Promise<FollowEntity> {
     // 유저, 팔로우 여부 확인
     await this.validateUser(followId);
-    const followed = await this.followRepository.findOne({
+    const follow = await this.followRepository.findOne({
       where: { followId: userId, followedId: followId },
     });
 
-    // 이미 팔로우 한 유저인 경우
-    if (followed) {
+    if (follow) {
       throw new BaseError("already followed this user", 409);
     }
 
@@ -65,25 +72,24 @@ export class UserService {
   /**
    * 팔로우 삭제
    */
-  public async deleteFollow(userId: number, followId: number) {
+  public async deleteFollow(userId: number, followId: number): Promise<DeleteResult> {
     // 유저, 팔로우 여부 확인
     await this.validateUser(followId);
-    const followed = await this.followRepository.findOne({
+    const follow = await this.followRepository.findOne({
       where: { followId: userId, followedId: followId },
     });
 
-    // 팔로우 하지 않은 유저인 경우
-    if (!followed) {
+    if (!follow) {
       throw new BaseError("Don't followed this user", 409);
     }
 
-    return await this.followRepository.delete(followed);
+    return await this.followRepository.delete(follow);
   }
 
   /**
    * 유저 유효성 검사
    */
-  private async validateUser(userId: number) {
+  private async validateUser(userId: number): Promise<UserEntity> {
     const user = await this.userRepository.findOne({ where: { id: userId } });
 
     if (!user) {
@@ -91,5 +97,48 @@ export class UserService {
     }
 
     return user;
+  }
+
+  /**
+   * 게시글 유효성 검사
+   */
+  private async validatePost(postId: number): Promise<PostEntity> {
+    const post = await this.postRepository.findOne({ where: { id: postId } });
+
+    if (!post) {
+      throw new BaseError("Post not found", 404);
+    }
+
+    return post;
+  }
+
+  /**
+   * 게시글 좋아요 추가
+   */
+  public async createLike(userId: number, postId: number): Promise<LikeEntity> {
+    // 게시글, 좋아요 여부 확인
+    await this.validatePost(postId);
+    const like = await this.likeRepository.findOne({ where: { userId, postId } });
+
+    if (like) {
+      throw new BaseError("already like this post", 409);
+    }
+
+    return await this.likeRepository.save({ userId, postId });
+  }
+
+  /**
+   * 게시글 좋아요 삭제
+   */
+  public async deleteLike(userId: number, postId: number) {
+    // 게시글 좋아요 여부 확인
+    await this.validatePost(postId);
+    const like = await this.likeRepository.findOne({ where: { userId, postId } });
+
+    if (!like) {
+      throw new BaseError("Don't like this post", 409);
+    }
+
+    return await this.likeRepository.delete(like);
   }
 }

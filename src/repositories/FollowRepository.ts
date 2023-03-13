@@ -1,6 +1,6 @@
 import { dataSource } from "../config/typeormConfig";
 import { FollowEntity } from "../entities/FollowEntity";
-import { DeepPartial, FindOneOptions, FindOptionsWhere } from "typeorm";
+import { DeepPartial, DeleteResult, FindOneOptions, FindOptionsWhere } from "typeorm";
 
 export class FollowRepository {
   private readonly followRepository = dataSource.getRepository(FollowEntity);
@@ -15,7 +15,7 @@ export class FollowRepository {
     return await this.followRepository.save(entity);
   }
 
-  public async delete(options: FindOptionsWhere<FollowEntity>) {
+  public async delete(options: FindOptionsWhere<FollowEntity>): Promise<DeleteResult> {
     return await this.followRepository.delete(options);
   }
 }
